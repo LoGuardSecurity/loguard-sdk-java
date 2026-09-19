@@ -40,8 +40,6 @@ public final class Json {
         }
     }
 
-    // ── Writing ──────────────────────────────────────────────────────
-
     public static String write(Object value) {
         StringBuilder sb = new StringBuilder();
         writeValue(sb, value, 0);
@@ -143,8 +141,6 @@ public final class Json {
         }
         sb.append('"');
     }
-
-    // ── Reading ──────────────────────────────────────────────────────
 
     /**
      * Parses JSON text into java.util.Map / java.util.List / String /

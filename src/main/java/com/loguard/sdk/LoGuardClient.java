@@ -2,10 +2,10 @@ package com.loguard.sdk;
 
 import com.loguard.sdk.exceptions.LoGuardException;
 import com.loguard.sdk.exceptions.LoGuardValidationException;
+import com.loguard.sdk.internal.Signing;
 import com.loguard.sdk.internal.Transport;
 
 import java.time.Instant;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -55,7 +55,6 @@ import java.util.logging.Logger;
 public final class LoGuardClient implements AutoCloseable {
 
     private static final Logger LOG = Logger.getLogger("com.loguard.sdk");
-    private static final DateTimeFormatter TS_FORMAT = DateTimeFormatter.ISO_INSTANT;
 
     private final LoGuardConfig config;
     private final Transport transport;
@@ -93,8 +92,6 @@ public final class LoGuardClient implements AutoCloseable {
         this.onDropped = callback;
     }
 
-    // ── Ingest: sync ─────────────────────────────────────────────────
-
     public IngestResult event(String type, String ip, String path, int statusCode) {
         return event(type, ip, path, statusCode, null, null, null, null);
     }
@@ -116,8 +113,6 @@ public final class LoGuardClient implements AutoCloseable {
         }
         return sendEventsSync(built);
     }
-
-    // ── Ingest: async ────────────────────────────────────────────────
 
     /**
      * Queue an event for background delivery without blocking the
@@ -199,8 +194,6 @@ public final class LoGuardClient implements AutoCloseable {
         shutdown();
     }
 
-    // ── Internal: background worker ─────────────────────────────────
-
     private void startWorkerIfNeeded() {
         if (shuttingDown.get()) {
             return;
@@ -243,8 +236,6 @@ public final class LoGuardClient implements AutoCloseable {
             workerStopped.countDown();
         }
     }
-
-    // ── Internal: validation ────────────────────────────────────────
 
     @SuppressWarnings("unchecked")
     private Event buildEventFromMap(Map<String, Object> e) {
@@ -335,8 +326,6 @@ public final class LoGuardClient implements AutoCloseable {
         return s.length() > maxLen ? s.substring(0, maxLen) : s;
     }
 
-    // ── Internal: transport ─────────────────────────────────────────
-
     private IngestResult sendEventsSync(List<Event> events) {
         List<Object> eventMaps = new ArrayList<>(events.size());
         for (Event e : events) {
@@ -362,7 +351,7 @@ public final class LoGuardClient implements AutoCloseable {
         Map<String, String> h = new LinkedHashMap<>();
         h.put("X-Api-Key", config.apiKey());
         h.put("Content-Type", "application/json");
-        h.put("User-Agent", com.loguard.sdk.internal.Signing.SDK_NAME + "/" + com.loguard.sdk.internal.Signing.SDK_VERSION);
+        h.put("User-Agent", Signing.SDK_NAME + "/" + Signing.SDK_VERSION);
         return h;
     }
 }
