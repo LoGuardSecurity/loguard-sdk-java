@@ -58,7 +58,6 @@ public final class LoGuardClient implements AutoCloseable {
 
     private final LoGuardConfig config;
     private final Transport transport;
-    private final AlertsClient alerts;
 
     private final BlockingQueue<Event> queue;
     private final AtomicBoolean workerStarted = new AtomicBoolean(false);
@@ -71,16 +70,11 @@ public final class LoGuardClient implements AutoCloseable {
     public LoGuardClient(LoGuardConfig config) {
         this.config = config;
         this.transport = new Transport(config.timeout());
-        this.alerts = new AlertsClient(this);
         this.queue = new ArrayBlockingQueue<>(config.maxQueueSize());
     }
 
     public LoGuardConfig config() {
         return config;
-    }
-
-    public AlertsClient alerts() {
-        return alerts;
     }
 
     Transport transport() {

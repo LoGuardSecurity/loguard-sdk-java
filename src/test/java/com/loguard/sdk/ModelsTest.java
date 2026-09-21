@@ -65,23 +65,6 @@ class ModelsTest {
     }
 
     @Test
-    void alertRuleRoundTripsThroughJson() {
-        AlertRule rule = new AlertRule("Brute force", List.of(
-            new AlertCondition("type", "eq", "login_failed"),
-            new AlertCondition("rate_per_minute", "gt", 10)
-        )).severity("high").actions(List.of("notify", "block"));
-
-        String json = com.loguard.sdk.internal.Json.write(rule.toMap());
-        Object decoded = com.loguard.sdk.internal.Json.parse(json);
-        AlertRule restored = AlertRule.fromMap(decoded);
-
-        assertEquals("Brute force", restored.name());
-        assertEquals("high", restored.severity());
-        assertEquals(2, restored.conditions().size());
-        assertEquals("rate_per_minute", restored.conditions().get(1).field());
-    }
-
-    @Test
     void eventMapShapeMatchesIngestContract() {
         Event event = new Event("login_failed", "1.2.3.4", "/login", 401, "2026-09-19T10:00:00Z", "user_1", "api", Map.of("env", "production"));
         Map<String, Object> map = event.toMap();

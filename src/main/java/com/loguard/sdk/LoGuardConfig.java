@@ -133,11 +133,6 @@ public final class LoGuardConfig {
         return baseUrl + "/v1/ingest";
     }
 
-    public String alertRulesUrl(Long ruleId) {
-        String base = baseUrl + "/v1/alert-rules";
-        return ruleId != null ? base + "/" + ruleId : base;
-    }
-
     public static Builder builder(String apiKey) {
         return new Builder(apiKey);
     }

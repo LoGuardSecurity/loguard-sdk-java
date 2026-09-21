@@ -51,11 +51,4 @@ class LoGuardConfigTest {
         assertEquals(Duration.ofSeconds(10), config.timeout());
         assertEquals(3, config.retries());
     }
-
-    @Test
-    void alertRulesUrlWithAndWithoutId() {
-        LoGuardConfig config = LoGuardConfig.builder("lg_live_x").build();
-        assertEquals("https://loguard.org/v1/alert-rules", config.alertRulesUrl(null));
-        assertEquals("https://loguard.org/v1/alert-rules/42", config.alertRulesUrl(42L));
-    }
 }
