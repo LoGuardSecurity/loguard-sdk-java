@@ -88,7 +88,7 @@ public final class Transport {
                 }
                 lastException = new LoGuardConnectionException("Server error " + result.status);
             } catch (TransportIoException e) {
-                lastException = new LoGuardConnectionException("Connection error: " + e.getMessage(), e);
+                lastException = new LoGuardConnectionException("Connection error");
             }
 
             sleepBackoff(attempt, retries);
@@ -109,7 +109,7 @@ public final class Transport {
                 }
                 lastException = new LoGuardConnectionException("Server error " + result.status);
             } catch (TransportIoException e) {
-                lastException = new LoGuardConnectionException("Connection error: " + e.getMessage(), e);
+                lastException = new LoGuardConnectionException("Connection error");
             }
 
             sleepBackoff(attempt, retries);
@@ -201,32 +201,29 @@ public final class Transport {
             if ("subscription_expired".equals(detail)) {
                 throw new LoGuardAuthException("Subscription expired — renew at loguard.org");
             }
-            throw new LoGuardAuthException("Access denied: " + detail);
+            throw new LoGuardAuthException("Access denied");
         }
         if (status == 404) {
-            throw new LoGuardNotFoundException("Not found: " + d.getOrDefault("detail", snippet));
+            throw new LoGuardNotFoundException("Not found");
         }
         if (status == 409) {
-            throw new LoGuardConflictException("Conflict: " + d.getOrDefault("detail", snippet));
+            throw new LoGuardConflictException("Conflict");
         }
         if (status == 422) {
-            throw new LoGuardValidationException("Validation error: " + snippet);
+            throw new LoGuardValidationException("Validation error");
         }
         if (status == 429) {
             Object detailRaw = d.get("detail");
             if (detailRaw instanceof Map) {
                 Map<String, Object> detail = (Map<String, Object>) detailRaw;
                 if ("usage_limit_exceeded".equals(detail.get("err"))) {
-                    throw new LoGuardQuotaException(String.format(
-                        "Monthly quota exceeded: %s/%s events on plan '%s'. Upgrade at loguard.org",
-                        detail.get("used"), detail.get("limit"), detail.get("plan")
-                    ));
+                    throw new LoGuardQuotaException("Monthly quota exceeded");
                 }
             }
-            throw new LoGuardConnectionException("Rate limited: " + snippet);
+            throw new LoGuardConnectionException("Rate limited");
         }
         if (status >= 500) {
-            throw new LoGuardConnectionException("Server error (" + status + "): " + snippet);
+            throw new LoGuardConnectionException("Server error (" + status + ")");
         }
 
         return decoded;
